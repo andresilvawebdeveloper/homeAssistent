@@ -158,8 +158,12 @@ function renderState(state) {
 }
 
 async function loadState() {
-  const res = await fetch("/api/state");
-  renderState(await res.json());
+  try {
+    const res = await fetch("/api/state");
+    if (res.ok) renderState(await res.json());
+  } catch {
+    /* servidor inacessível — mantém o último estado */
+  }
 }
 
 async function deviceAction(id, action, value = null) {
@@ -470,6 +474,67 @@ els.micBtn.addEventListener("click", () => {
 document.querySelectorAll(".scene").forEach((b) =>
   b.addEventListener("click", () => mode !== "thinking" && sendCommand(b.dataset.cmd)),
 );
+
+// =========================================================================
+// PWA: instalação, ecrã sempre ligado, ecrã inteiro, offline
+// =========================================================================
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => {}));
+}
+
+// Botão "Instalar" (Chrome/Edge/Android). No iPhone/iPad: Partilhar → Adicionar ao ecrã principal.
+let installPrompt = null;
+const installBtn = $("installBtn");
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  installPrompt = e;
+  installBtn.hidden = false;
+});
+installBtn.addEventListener("click", async () => {
+  if (!installPrompt) return;
+  installPrompt.prompt();
+  await installPrompt.userChoice;
+  installPrompt = null;
+  installBtn.hidden = true;
+});
+window.addEventListener("appinstalled", () => {
+  installBtn.hidden = true;
+  log("jarvis", "Aplicação instalada com sucesso, senhor.");
+});
+
+// Mantém o ecrã ligado (ideal para um tablet na parede). O browser liberta o
+// bloqueio quando a app vai para segundo plano, por isso pedimo-lo de novo ao voltar.
+let wakeLock = null;
+async function keepScreenOn() {
+  if (!("wakeLock" in navigator) || document.visibilityState !== "visible") return;
+  try {
+    wakeLock = await navigator.wakeLock.request("screen");
+  } catch {
+    /* recusado (ex.: poupança de bateria) */
+  }
+}
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && audioCtx) keepScreenOn();
+});
+els.bootBtn.addEventListener("click", keepScreenOn);
+
+// Ecrã inteiro
+const fullscreenBtn = $("fullscreenBtn");
+if (!document.fullscreenEnabled) fullscreenBtn.hidden = true;
+fullscreenBtn.addEventListener("click", () => {
+  if (document.fullscreenElement) document.exitFullscreen();
+  else document.documentElement.requestFullscreen().catch(() => {});
+});
+
+// Indicador offline
+const netStatus = $("netStatus");
+function updateOnline() {
+  netStatus.hidden = navigator.onLine;
+  if (navigator.onLine) { loadState(); loadWeather(); }
+}
+window.addEventListener("online", updateOnline);
+window.addEventListener("offline", updateOnline);
+netStatus.hidden = navigator.onLine;
 
 // =========================================================================
 // Arranque

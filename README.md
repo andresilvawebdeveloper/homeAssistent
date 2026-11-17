@@ -9,6 +9,7 @@ Dashboard de casa inteligente ao estilo HUD do Homem de Ferro, com um assistente
 - **IA com ferramentas**: o Jarvis consegue ligar/desligar e ajustar dispositivos, ativar cenários (cinema, sair de casa, chegar a casa, dormir, trabalho) e consultar a meteorologia real.
 - **Dashboard**: relógio, meteorologia (Open-Meteo, sem chave), sensores, dispositivos clicáveis com sliders, cenários e registo de atividade.
 - **Modo dia / noite**: durante o dia mostra o dashboard completo; à noite (por defeito das 22h às 7h) passa a um ecrã escuro com as horas em grande, baixa luminosidade e "J.A.R.V.I.S." em baixo. O nome acende quando o Jarvis está a ouvir, a pensar ou a falar, e a resposta aparece por baixo do relógio. Tocar no ecrã mostra o dashboard durante 1 minuto. O botão **AUTO / ☀ DIA / ☾ NOITE** no topo força um modo (fica guardado no browser). O horário muda-se em `NIGHT_START` / `NIGHT_END` no início de `public/app.js`.
+- **App instalável (PWA)**: instala-se no telemóvel, tablet ou computador com ícone próprio, abre em ecrã inteiro sem a barra do browser, mantém o ecrã sempre ligado e abre mesmo sem internet (os comandos ao Jarvis precisam de ligação ao servidor).
 - Campo de texto para escrever comandos quando não quer (ou não pode) falar.
 
 ## Como correr
@@ -33,6 +34,16 @@ Abra **http://localhost:3000** no **Chrome ou Edge** (o reconhecimento de voz n�
 
 > O microfone só funciona em `localhost` ou em HTTPS. Para usar num tablet na parede, sirva o dashboard atrás de HTTPS (por exemplo com um proxy reverso).
 
+## Instalar como aplicação (PWA)
+
+- **Chrome / Edge (computador e Android)**: aparece o botão **⤓ INSTALAR** no topo do dashboard (ou o ícone de instalar na barra de endereço).
+- **iPhone / iPad (Safari)**: Partilhar → **Adicionar ao ecrã principal**.
+- O botão **⛶** alterna o ecrã inteiro; depois de **Iniciar sistemas** o ecrã fica sempre ligado.
+
+**Importante:** fora do próprio computador (`localhost`), o browser só permite instalar a app e usar o microfone por **HTTPS**. Para usar num tablet ou telemóvel na rede de casa, a forma mais simples é o [Tailscale](https://tailscale.com/kb/1153/enabling-https) (`tailscale serve 3000` dá-te um endereço HTTPS privado) ou um Cloudflare Tunnel.
+
+Ao alterar os ficheiros de `public/`, muda `CACHE_VERSION` em `public/sw.js` para os dispositivos instalados receberem a nova versão de imediato.
+
 ## Exemplos de comandos
 
 - "Jarvis, liga a luz da sala a cinquenta por cento"
@@ -48,7 +59,8 @@ Abra **http://localhost:3000** no **Chrome ou Edge** (o reconhecimento de voz n�
 | `server.js` | Servidor Express: estado da casa, meteorologia e o ciclo de ferramentas com o Claude (`/api/jarvis`). A chave da API fica só no servidor. |
 | `public/index.html` | Layout do dashboard |
 | `public/style.css` | Estilo HUD / reator |
-| `public/app.js` | Palavra de ativação, reconhecimento e síntese de voz, renderização do dashboard |
+| `public/app.js` | Palavra de ativação, reconhecimento e síntese de voz, renderização do dashboard, modo noite, PWA |
+| `public/manifest.webmanifest`, `public/sw.js`, `public/icons/` | Manifesto, service worker e ícones da app instalável |
 
 ## Ligar a dispositivos reais
 

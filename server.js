@@ -230,7 +230,14 @@ async function askJarvis(userText, clientTime) {
 // ---------------------------------------------------------------------------
 const app = express();
 app.use(express.json());
-app.use(express.static(path.join(here, "public")));
+app.use(
+  express.static(path.join(here, "public"), {
+    setHeaders(res, filePath) {
+      // O service worker nunca deve ficar em cache, para as atualizações chegarem logo.
+      if (filePath.endsWith("sw.js")) res.setHeader("Cache-Control", "no-cache");
+    },
+  }),
+);
 
 app.get("/api/state", (_req, res) => res.json(home));
 
