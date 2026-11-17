@@ -184,3 +184,62 @@ h2 { font-size: 0.75rem; color: var(--cyan); text-transform: uppercase; margin: 
 .log-body .entry.action { border-color: var(--ok); color: var(--ok); font-size: .8rem; }
 .log-body .entry.error { border-color: var(--red); color: var(--red); }
 .log-body time { font-size: .7rem; color: var(--muted); margin-right: 6px; }
+
+/* ---------- Botão dia/noite ---------- */
+.pill-btn { background: transparent; cursor: pointer; font-family: "Orbitron", sans-serif; }
+.pill-btn:hover { box-shadow: var(--glow); }
+
+/* ---------- Modo noite ---------- */
+.night {
+  position: fixed; inset: 0; z-index: 40;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 16px; background: #000; color: rgba(64, 220, 255, 0.32);
+  opacity: 0; pointer-events: none; transition: opacity 1.2s ease; cursor: pointer;
+  user-select: none;
+}
+body.is-night .night { opacity: 1; pointer-events: auto; }
+body.is-night { overflow: hidden; }
+
+.night-clock {
+  text-align: center;
+  animation: drift 240s ease-in-out infinite; /* desloca devagar para evitar marcas no ecrã */
+}
+#nightTime {
+  font-family: "Orbitron", sans-serif; font-weight: 400;
+  font-size: clamp(4.5rem, 22vw, 18rem); line-height: 1; letter-spacing: .04em;
+  text-shadow: 0 0 24px rgba(64, 220, 255, 0.12);
+  font-variant-numeric: tabular-nums;
+}
+.night-date {
+  margin-top: 14px; font-family: "Orbitron", sans-serif; text-transform: uppercase;
+  letter-spacing: .3em; font-size: clamp(.7rem, 2vw, 1rem); color: rgba(64, 220, 255, 0.22);
+}
+.night-reply {
+  min-height: 1.5em; margin-top: 4vh; max-width: 680px; text-align: center;
+  font-size: clamp(1rem, 2.4vw, 1.3rem); color: rgba(207, 239, 255, 0.45);
+  transition: opacity .6s;
+}
+.night-reply:empty { opacity: 0; }
+.night-footer { position: absolute; left: 0; right: 0; bottom: 6vh; text-align: center; }
+.night-jarvis {
+  font-family: "Orbitron", sans-serif; font-weight: 600; letter-spacing: .5em;
+  font-size: clamp(.9rem, 2.4vw, 1.3rem); color: rgba(64, 220, 255, 0.28);
+  transition: color .4s, text-shadow .4s;
+}
+.night-hint { margin-top: 10px; font-size: .75rem; color: rgba(106, 151, 171, 0.25); letter-spacing: .1em; }
+
+/* Quando o Jarvis acorda à noite, o nome acende (sem encandear) */
+.night.listening .night-jarvis { color: rgba(64, 220, 255, 0.85); text-shadow: 0 0 18px rgba(64, 220, 255, 0.5); animation: breathe 1s ease-in-out infinite; }
+.night.thinking .night-jarvis { color: rgba(255, 181, 71, 0.75); text-shadow: 0 0 16px rgba(255, 181, 71, 0.4); animation: breathe .6s ease-in-out infinite; }
+.night.speaking .night-jarvis { color: rgba(64, 220, 255, 0.7); text-shadow: 0 0 14px rgba(64, 220, 255, 0.4); }
+
+@keyframes breathe { 50% { opacity: .55; } }
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(2vw, -2vh); }
+  50% { transform: translate(-1.5vw, 1.5vh); }
+  75% { transform: translate(-2vw, -1vh); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .night-clock, .night-jarvis { animation: none !important; }
+}

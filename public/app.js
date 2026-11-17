@@ -7,6 +7,11 @@ const LANG = "pt-PT";
 const WAKE_WORD = /\b(jarvis|jarviz|jarves|jervis|djarvis|jarbas|já vis)\b[\s,.!?:;-]*/i;
 const AWAKE_TIMEOUT_MS = 8000;
 
+// Modo noite: entre NIGHT_START e NIGHT_END (horas locais) mostra o relógio grande.
+const NIGHT_START = 22; // 22:00
+const NIGHT_END = 7;    // 07:00
+const PEEK_MS = 60 * 1000; // ao tocar no ecrã noturno, mostra o dashboard durante 1 minuto
+
 const $ = (id) => document.getElementById(id);
 const els = {
   boot: $("boot"), bootBtn: $("bootBtn"), reactor: $("reactor"), stateLabel: $("stateLabel"),
@@ -14,6 +19,8 @@ const els = {
   micBtn: $("micBtn"), micStatus: $("micStatus"), aiStatus: $("aiStatus"),
   devices: $("devices"), sensors: $("sensors"), weather: $("weather"), log: $("log"),
   time: $("time"), date: $("date"),
+  night: $("night"), nightTime: $("nightTime"), nightDate: $("nightDate"),
+  nightReply: $("nightReply"), themeBtn: $("themeBtn"),
 };
 
 // =========================================================================
@@ -22,8 +29,49 @@ const els = {
 function tickClock() {
   const now = new Date();
   els.time.textContent = now.toLocaleTimeString(LANG);
-  els.date.textContent = now.toLocaleDateString(LANG, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  const dateText = now.toLocaleDateString(LANG, { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  els.date.textContent = dateText;
+  els.nightTime.textContent = now.toLocaleTimeString(LANG, { hour: "2-digit", minute: "2-digit" });
+  els.nightDate.textContent = dateText;
+  updateDayNight(now);
 }
+
+// =========================================================================
+// Dia / noite
+// =========================================================================
+const THEMES = ["auto", "day", "night"];
+const THEME_LABEL = { auto: "AUTO", day: "☀ DIA", night: "☾ NOITE" };
+let themePref = "auto";
+try { themePref = localStorage.getItem("jarvis-theme") ?? "auto"; } catch {}
+if (!THEMES.includes(themePref)) themePref = "auto";
+let peekUntil = 0;
+
+function isNightHour(date) {
+  const h = date.getHours();
+  return NIGHT_START > NIGHT_END ? h >= NIGHT_START || h < NIGHT_END : h >= NIGHT_START && h < NIGHT_END;
+}
+
+function updateDayNight(now = new Date()) {
+  const wantNight = themePref === "night" || (themePref === "auto" && isNightHour(now));
+  const night = wantNight && Date.now() > peekUntil;
+  document.body.classList.toggle("is-night", night);
+  els.night.setAttribute("aria-hidden", String(!night));
+  els.themeBtn.textContent = THEME_LABEL[themePref];
+}
+
+els.themeBtn.addEventListener("click", () => {
+  themePref = THEMES[(THEMES.indexOf(themePref) + 1) % THEMES.length];
+  try { localStorage.setItem("jarvis-theme", themePref); } catch {}
+  peekUntil = 0;
+  updateDayNight();
+});
+
+// Tocar no ecrã noturno mostra o dashboard durante PEEK_MS
+els.night.addEventListener("click", () => {
+  peekUntil = Date.now() + PEEK_MS;
+  updateDayNight();
+});
+
 setInterval(tickClock, 1000);
 tickClock();
 
@@ -220,10 +268,12 @@ let awakeTimer = null;
 
 function setMode(next, label) {
   mode = next;
-  els.reactor.classList.remove("listening", "thinking", "speaking");
-  if (next === "awake") els.reactor.classList.add("listening");
-  if (next === "thinking") els.reactor.classList.add("thinking");
-  if (next === "speaking") els.reactor.classList.add("speaking");
+  const cls = { awake: "listening", thinking: "thinking", speaking: "speaking" }[next];
+  for (const el of [els.reactor, els.night]) {
+    el.classList.remove("listening", "thinking", "speaking");
+    if (cls) el.classList.add(cls);
+  }
+  if (next === "idle") els.nightReply.textContent = "";
   els.stateLabel.textContent =
     label ??
     {
@@ -276,6 +326,7 @@ async function sendCommand(text) {
   }
 
   els.reply.textContent = reply;
+  els.nightReply.textContent = reply;
   doneSound();
   setMode("speaking");
   pauseRecognition();

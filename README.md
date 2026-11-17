@@ -8,6 +8,7 @@ Dashboard de casa inteligente ao estilo HUD do Homem de Ferro, com um assistente
 - **Resposta por voz** em português de Portugal (síntese de voz do browser). O microfone fica em pausa enquanto o Jarvis fala, para ele não se ouvir a si próprio.
 - **IA com ferramentas**: o Jarvis consegue ligar/desligar e ajustar dispositivos, ativar cenários (cinema, sair de casa, chegar a casa, dormir, trabalho) e consultar a meteorologia real.
 - **Dashboard**: relógio, meteorologia (Open-Meteo, sem chave), sensores, dispositivos clicáveis com sliders, cenários e registo de atividade.
+- **Modo dia / noite**: durante o dia mostra o dashboard completo; à noite (por defeito das 22h às 7h) passa a um ecrã escuro com as horas em grande, baixa luminosidade e "J.A.R.V.I.S." em baixo. O nome acende quando o Jarvis está a ouvir, a pensar ou a falar, e a resposta aparece por baixo do relógio. Tocar no ecrã mostra o dashboard durante 1 minuto. O botão **AUTO / ☀ DIA / ☾ NOITE** no topo força um modo (fica guardado no browser). O horário muda-se em `NIGHT_START` / `NIGHT_END` no início de `public/app.js`.
 - Campo de texto para escrever comandos quando não quer (ou não pode) falar.
 
 ## Como correr

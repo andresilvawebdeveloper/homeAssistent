@@ -22,6 +22,19 @@
     </div>
   </div>
 
+  <!-- Modo noite: relógio grande, baixa luminosidade. Toque para ver o dashboard. -->
+  <div id="night" class="night" aria-hidden="true">
+    <div class="night-clock">
+      <div id="nightTime">--:--</div>
+      <div id="nightDate" class="night-date"></div>
+    </div>
+    <div id="nightReply" class="night-reply"></div>
+    <div class="night-footer">
+      <div id="nightJarvis" class="night-jarvis">J.A.R.V.I.S.</div>
+      <div id="nightHint" class="night-hint">Diga "Jarvis" · toque para abrir o dashboard</div>
+    </div>
+  </div>
+
   <header class="top">
     <div class="brand">J.A.R.V.I.S. <span>// HOME</span></div>
     <div class="clock">
@@ -29,6 +42,7 @@
       <div id="date"></div>
     </div>
     <div class="sys">
+      <button id="themeBtn" class="pill pill-btn" title="Alternar modo dia / noite">AUTO</button>
       <span id="micStatus" class="pill off">MIC OFF</span>
       <span id="aiStatus" class="pill">IA PRONTA</span>
     </div>
