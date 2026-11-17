@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="pt-PT">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>J.A.R.V.I.S. Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Rajdhani:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="grid-bg"></div>
+
+  <!-- Ecrã inicial: o browser exige um clique para ativar o microfone e o som -->
+  <div id="boot" class="boot">
+    <div class="boot-inner">
+      <div class="reactor small"><div class="ring r1"></div><div class="ring r2"></div><div class="core"></div></div>
+      <h1>J.A.R.V.I.S.</h1>
+      <p>Just A Rather Very Intelligent System</p>
+      <button id="bootBtn" class="btn primary">Iniciar sistemas</button>
+      <p class="hint">Será pedido acesso ao microfone. Depois, basta dizer <b>"Jarvis"</b>.</p>
+    </div>
+  </div>
+
+  <header class="top">
+    <div class="brand">J.A.R.V.I.S. <span>// HOME</span></div>
+    <div class="clock">
+      <div id="time">--:--:--</div>
+      <div id="date"></div>
+    </div>
+    <div class="sys">
+      <span id="micStatus" class="pill off">MIC OFF</span>
+      <span id="aiStatus" class="pill">IA PRONTA</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel weather">
+      <h2>Meteorologia</h2>
+      <div id="weather" class="weather-body">A carregar…</div>
+    </section>
+
+    <section class="center">
+      <div id="reactor" class="reactor">
+        <div class="ring r1"></div>
+        <div class="ring r2"></div>
+        <div class="ring r3"></div>
+        <div class="ticks"></div>
+        <div class="core"></div>
+      </div>
+      <div id="stateLabel" class="state-label">Diga "Jarvis" para ativar</div>
+      <div id="liveTranscript" class="live"></div>
+      <div id="reply" class="reply"></div>
+      <form id="cmdForm" class="cmd">
+        <input id="cmdInput" type="text" placeholder="Ou escreva um comando…" autocomplete="off" />
+        <button class="btn" type="submit">Enviar</button>
+        <button class="btn icon" type="button" id="micBtn" title="Falar agora">🎙</button>
+      </form>
+    </section>
+
+    <section class="panel sensors">
+      <h2>Sensores</h2>
+      <div id="sensors"></div>
+      <h2>Cenários</h2>
+      <div class="scenes">
+        <button class="btn scene" data-cmd="Ativa o modo cinema">Cinema</button>
+        <button class="btn scene" data-cmd="Vou sair de casa">Sair</button>
+        <button class="btn scene" data-cmd="Cheguei a casa">Chegar</button>
+        <button class="btn scene" data-cmd="Vou dormir">Dormir</button>
+        <button class="btn scene" data-cmd="Modo trabalho">Trabalho</button>
+      </div>
+    </section>
+
+    <section class="panel devices">
+      <h2>Dispositivos</h2>
+      <div id="devices" class="device-grid"></div>
+    </section>
+
+    <section class="panel log">
+      <h2>Registo</h2>
+      <div id="log" class="log-body"></div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
